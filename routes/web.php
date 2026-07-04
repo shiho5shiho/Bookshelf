@@ -14,5 +14,10 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('books.index');
+});
+
+// 仮ルート（後で実装に置き換え）
+Route::middleware('auth')->group(function () {
+    Route::get('/books', fn () => '書籍一覧（準備中）')->name('books.index');
 });

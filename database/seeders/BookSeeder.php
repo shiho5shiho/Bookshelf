@@ -2,11 +2,10 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
 use App\Models\Book;
 use App\Models\Genre;
 use App\Models\User;
+use Illuminate\Database\Seeder;
 
 class BookSeeder extends Seeder
 {
