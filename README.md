@@ -22,7 +22,7 @@
 
 ## ER図
 
-![ER図](docs\er-diagram.png)
+![ER図](docs/er-diagram.png)
 
 ## 環境構築手順
 
