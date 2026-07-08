@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\Genre;
 use App\Http\Requests\StoreGenreRequest;
 use App\Http\Requests\UpdateGenreRequest;
+use App\Models\Genre;
 
 class GenreController extends Controller
 {
@@ -56,7 +55,7 @@ class GenreController extends Controller
     {
         return view('genres.edit', compact('genre'));
     }
-    
+
     /**
      * Update the specified resource in storage.
      */
@@ -72,13 +71,13 @@ class GenreController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Genre $genre)   
+    public function destroy(Genre $genre)
     {
-    if ($genre->books()->exists()) {
-        return redirect()
-            ->route('genres.index')
-            ->with('error', 'このジャンルには書籍が紐づいているため削除できません。');
-    }
+        if ($genre->books()->exists()) {
+            return redirect()
+                ->route('genres.index')
+                ->with('error', 'このジャンルには書籍が紐づいているため削除できません。');
+        }
 
         $genre->delete();
 
