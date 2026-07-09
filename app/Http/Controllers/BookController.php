@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers;
 
-
-use App\Models\Book;
-use App\Models\Genre;
 use App\Http\Requests\StoreBookRequest;
 use App\Http\Requests\UpdateBookRequest;
+use App\Models\Book;
+use App\Models\Genre;
 
 class BookController extends Controller
 {
@@ -16,6 +15,7 @@ class BookController extends Controller
     public function index()
     {
         $books = Book::with('genres')->latest()->paginate(10);
+
         return view('books.index', compact('books'));
     }
 
@@ -25,6 +25,7 @@ class BookController extends Controller
     public function create()
     {
         $genres = Genre::all();
+
         return view('books.create', compact('genres'));
     }
 
@@ -47,6 +48,7 @@ class BookController extends Controller
     public function show(Book $book)
     {
         $book->load('genres', 'reviews.user', 'reviews.likedByUsers');
+
         return view('books.show', compact('book'));
     }
 
@@ -55,7 +57,10 @@ class BookController extends Controller
      */
     public function edit(Book $book)
     {
+        $this->authorize('update', $book);
+     
         $genres = Genre::all();
+
         return view('books.edit', compact('book', 'genres'));
     }
 
@@ -64,6 +69,8 @@ class BookController extends Controller
      */
     public function update(UpdateBookRequest $request, Book $book)
     {
+        $this->authorize('update', $book);
+     
         $book->update($request->validated());
         $book->genres()->sync($request->input('genres'));
 
@@ -77,6 +84,8 @@ class BookController extends Controller
      */
     public function destroy(Book $book)
     {
+        $this->authorize('delete', $book);
+
         $book->delete();
 
         return redirect()
