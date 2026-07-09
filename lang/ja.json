@@ -6,5 +6,6 @@
     "Page Expired": "ページの有効期限が切れました。お手数ですが、もう一度お試しください。",
     "Too Many Requests": "リクエストが多すぎます。しばらく時間をおいてから再度お試しください。",
     "Server Error": "サーバーエラーが発生しました。時間をおいて再度お試しください。",
-    "Service Unavailable": "現在メンテナンス中です。しばらくお待ちください。"
+    "Service Unavailable": "現在メンテナンス中です。しばらくお待ちください。",
+    "This action is unauthorized.": "この操作を行う権限がありません。"
 }

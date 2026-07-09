@@ -15,15 +15,14 @@ class BookPolicy
      */
     public function update(User $user, Book $book): bool
     {
-        return $user->id === $book->user_id;   // 作成者本人か？
+        return $user->id === $book->user_id;
     }
-
     /**
      * 書籍を削除できるか
      */
     public function delete(User $user, Book $book): bool
     {
-        return $user->id === $book->user_id;   // 作成者本人か？
+        return $user->id === $book->user_id;
     }
 
 
