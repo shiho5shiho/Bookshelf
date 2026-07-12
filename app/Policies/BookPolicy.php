@@ -4,12 +4,9 @@ namespace App\Policies;
 
 use App\Models\Book;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class BookPolicy
 {
-
-
     /**
      * 書籍を更新できるか
      */
@@ -17,6 +14,7 @@ class BookPolicy
     {
         return $user->id === $book->user_id;
     }
+
     /**
      * 書籍を削除できるか
      */
@@ -24,6 +22,4 @@ class BookPolicy
     {
         return $user->id === $book->user_id;
     }
-
-
 }
