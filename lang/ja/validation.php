@@ -158,8 +158,6 @@ return [
     'ulid' => ':attribute には有効なULIDを指定してください。',
     'uuid' => ':attribute には有効なUUIDを指定してください。',
 
-
-
     /*
     |--------------------------------------------------------------------------
     | Custom Validation Language Lines
