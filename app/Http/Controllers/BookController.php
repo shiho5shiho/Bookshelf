@@ -58,7 +58,7 @@ class BookController extends Controller
     public function edit(Book $book)
     {
         $this->authorize('update', $book);
-     
+
         $genres = Genre::all();
 
         return view('books.edit', compact('book', 'genres'));
@@ -70,7 +70,7 @@ class BookController extends Controller
     public function update(UpdateBookRequest $request, Book $book)
     {
         $this->authorize('update', $book);
-     
+
         $book->update($request->validated());
         $book->genres()->sync($request->input('genres'));
 
