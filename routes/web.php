@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\BookController;
+use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\GenreController;
 use App\Http\Controllers\ReviewController;
 use Illuminate\Support\Facades\Route;
@@ -31,9 +32,9 @@ Route::middleware('auth')->group(function () {
     Route::put('/reviews/{review}', [ReviewController::class, 'update'])->name('reviews.update');
     Route::delete('/reviews/{review}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
 
-    // TODO: お気に入り関連の仮ルート(#10で本実装に置き換え)
-    Route::get('/favorites', fn () => 'お気に入り一覧は未実装です(Issue #10で実装予定)')->name('favorites.index');
-    Route::post('/favorites/{book}', fn ($book) => 'お気に入り機能は未実装です(Issue #10で実装予定)')->name('favorites.toggle');
+    // TODO: お気に入り関連のルート
+    Route::get('/favorites', [FavoriteController::class, 'index'])->name('favorites.index');
+    Route::post('/books/{book}/favorites', [FavoriteController::class, 'toggle'])->name('favorites.toggle');
 
     // TODO: いいね機能の仮ルート(#11で本実装に置き換え)
     Route::post('/reviews/{review}/like', fn ($review) => 'いいね機能は未実装です(Issue #11で実装予定)')->name('reviews.like');
