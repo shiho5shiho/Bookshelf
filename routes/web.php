@@ -43,4 +43,4 @@ Route::middleware('auth')->group(function () {
 
 Route::resource('books', BookController::class)->only(['index', 'show']);
 // TODO:ランキング機能の仮ルート（Issue #12で実装予定）
-Route::get('/ranking', fn() => 'ランキングは未実装です(Issue #12で実装予定)')->name('ranking.index');
+Route::get('/ranking', fn () => 'ランキングは未実装です(Issue #12で実装予定)')->name('ranking.index');
