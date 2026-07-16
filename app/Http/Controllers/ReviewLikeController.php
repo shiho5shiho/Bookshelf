@@ -9,13 +9,7 @@ class ReviewLikeController extends Controller
 {
     public function toggle(Review $review): RedirectResponse
     {
-        $userId = auth()->id();
-
-        if ($review->user_id === $userId) {
-            return back();
-        }
-
-        $review->likedByUsers()->toggle($userId);
+        $review->likedByUsers()->toggle(auth()->id());
 
         return back();
     }
