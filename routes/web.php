@@ -3,6 +3,7 @@
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\GenreController;
+use App\Http\Controllers\RankingController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\ReviewLikeController;
 use Illuminate\Support\Facades\Route;
@@ -22,6 +23,7 @@ Route::get('/', function () {
     return redirect()->route('books.index');
 });
 
+// 認証が必要なルート
 Route::middleware('auth')->group(function () {
     // ジャンルのCRUDルート
     Route::resource('genres', GenreController::class);
@@ -40,7 +42,8 @@ Route::middleware('auth')->group(function () {
     // いいね機能のルート
     Route::post('/reviews/{review}/like', [ReviewLikeController::class, 'toggle'])->name('reviews.like');
 });
-
+// 認証が不要なルート
+// 書籍関連
 Route::resource('books', BookController::class)->only(['index', 'show']);
-// TODO:ランキング機能の仮ルート（Issue #12で実装予定）
-Route::get('/ranking', fn () => 'ランキングは未実装です(Issue #12で実装予定)')->name('ranking.index');
+// ランキング機能のルート
+Route::get('/ranking', [RankingController::class, 'index'])->name('ranking.index');
