@@ -9,6 +9,7 @@ class ReviewRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
+     *実行可否の判断
      */
     public function authorize(): bool
     {
@@ -19,6 +20,7 @@ class ReviewRequest extends FormRequest
      * Get the validation rules that apply to the request.
      *
      * @return array<string, ValidationRule|array<mixed>|string>
+     *検証ルールの取得
      */
     public function rules(): array
     {
@@ -28,6 +30,7 @@ class ReviewRequest extends FormRequest
         ];
     }
 
+    // エラーメッセージ
     public function messages(): array
     {
         return [
