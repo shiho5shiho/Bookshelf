@@ -59,7 +59,7 @@ class BookTest extends TestCase
 
         // Assert
         $this->assertCount(3, $reviews);
-        $this->assertTrue($reviews->every(fn($review) => $review->book_id === $book->id));
+        $this->assertTrue($reviews->every(fn ($review) => $review->book_id === $book->id));
     }
 
     public function test_書籍をお気に入りにしているユーザーを取得できる(): void

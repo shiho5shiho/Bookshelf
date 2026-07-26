@@ -24,7 +24,7 @@ class UserTest extends TestCase
 
         // Assert
         $this->assertCount(3, $books);
-        $this->assertTrue($books->every(fn($book) => $book->user_id === $user->id));
+        $this->assertTrue($books->every(fn ($book) => $book->user_id === $user->id));
     }
 
     public function test_ユーザーが投稿したレビューを取得できる(): void
@@ -40,7 +40,7 @@ class UserTest extends TestCase
 
         // Assert
         $this->assertCount(2, $reviews);
-        $this->assertTrue($reviews->every(fn($review) => $review->user_id === $user->id));
+        $this->assertTrue($reviews->every(fn ($review) => $review->user_id === $user->id));
     }
 
     public function test_ユーザーがお気に入りにした書籍を取得できる(): void

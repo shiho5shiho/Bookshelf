@@ -141,10 +141,10 @@ class AuthenticationTest extends TestCase
         ]);
 
         // Assert
-        $this->assertGuest();
         $response->assertSessionHasErrors([
             'email' => 'メールアドレスまたはパスワードが正しくありません。',
         ]);
+        $this->assertGuest();
     }
 
     public function test_ログイン状態からログアウトできる(): void
