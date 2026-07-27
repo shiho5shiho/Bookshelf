@@ -11,6 +11,49 @@ class GuestAccessTest extends TestCase
 {
     use RefreshDatabase;
 
+    // 200が返る公開ページ。　※トップと書籍詳細は事情が異なるため別メソッドで検証
+    public static function 認証不要GETページ(): array
+    {
+        return [
+            '書籍一覧画面' => ['/books'],
+            'ランキング画面' => ['/ranking'],
+        ];
+    }
+
+    #[DataProvider('認証不要GETページ')]
+    public function test_未認証ユーザーは認証不要画面にアクセスできる(string $url): void
+    {
+        // Act
+        $response = $this->get($url);
+
+        // Assert
+        $response->assertOk();
+    }
+
+    // トップは書籍一覧へリダイレクトされる（web.php で redirect）。
+    // followingRedirects() で追跡し、最終的に200が返ることを検証する
+    public function test_未認証ユーザーはトップページにアクセスできる(): void
+    {
+        // Act
+        $response = $this->followingRedirects()->get('/');
+
+        // Assert
+        $response->assertOk();
+    }
+
+    // 書籍詳細は実レコードが要るので独立
+    public function test_未認証ユーザーは書籍詳細を閲覧できる(): void
+    {
+        // Arrange
+        $book = Book::factory()->create();
+
+        // Act
+        $response = $this->get("/books/{$book->id}");
+
+        // Assert
+        $response->assertOk();
+    }
+
     public static function 認証必須GETページ(): array
     {
         return [
@@ -60,48 +103,5 @@ class GuestAccessTest extends TestCase
 
         // Assert
         $response->assertRedirect('/login');
-    }
-
-    // 200が返る公開ページ。　※トップと書籍詳細は事情が異なるため別メソッドで検証
-    public static function 認証不要GETページ(): array
-    {
-        return [
-            '書籍一覧画面' => ['/books'],
-            'ランキング画面' => ['/ranking'],
-        ];
-    }
-
-    #[DataProvider('認証不要GETページ')]
-    public function test_未認証ユーザーは認証不要画面にアクセスできる(string $url): void
-    {
-        // Act
-        $response = $this->get($url);
-
-        // Assert
-        $response->assertOk();
-    }
-
-    // トップは書籍一覧へリダイレクトされる（web.php で redirect）。
-    // followingRedirects() で追跡し、最終的に200が返ることを検証する
-    public function test_未認証ユーザーはトップページにアクセスできる(): void
-    {
-        // Act
-        $response = $this->followingRedirects()->get('/');
-
-        // Assert
-        $response->assertOk();
-    }
-
-    // 書籍詳細は実レコードが要るので独立
-    public function test_未認証ユーザーは書籍詳細を閲覧できる(): void
-    {
-        // Arrange
-        $book = Book::factory()->create();
-
-        // Act
-        $response = $this->get("/books/{$book->id}");
-
-        // Assert
-        $response->assertOk();
     }
 }
