@@ -8,7 +8,7 @@ use Illuminate\Notifications\Notification;
 class ReadingPlanReminder extends Notification
 {
     /**
-     * @param 'three_days_before'|'on_due_date'|'three_days_after' $timing
+     * @param  'three_days_before'|'on_due_date'|'three_days_after'  $timing
      */
     public function __construct(
         private readonly ReadingPlan $readingPlan,
