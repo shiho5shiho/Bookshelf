@@ -7,6 +7,7 @@ use App\Http\Controllers\RankingController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\ReviewLikeController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\NotificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,6 +29,10 @@ Route::middleware('auth')->group(function () {
     // ジャンルのCRUDルート
     Route::resource('genres', GenreController::class);
     Route::resource('books', BookController::class)->except(['index', 'show']);
+
+    // 通知
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/{id}/read', [NotificationController::class, 'read'])->name('notifications.read');
 
     // レビュー関連のルート
     Route::post('/books/{book}/reviews', [ReviewController::class, 'store'])->name('reviews.store');
