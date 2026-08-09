@@ -35,7 +35,7 @@ class ReportControllerTest extends TestCase
         $response->assertViewHas('stats', function (array $stats): bool {
             return $stats['summary']['total_reviews'] === 0
                 && $stats['summary']['books_read'] === 0
-                && $stats['summary']['average_rating'] === 0
+                && $stats['summary']['average_rating'] === 0.0
                 && $stats['rating_distribution']->count() === 5
                 && $stats['top_rated_books']->isEmpty()
                 && $stats['genre_ratings']->isEmpty();

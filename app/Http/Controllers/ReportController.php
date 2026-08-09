@@ -22,7 +22,7 @@ class ReportController extends Controller
             'summary' => [
                 'total_reviews' => $reviews->count(),
                 'books_read' => $reviews->pluck('book_id')->unique()->count(),
-                'average_rating' => $reviews->avg('rating') ?? 0,
+                'average_rating' => (float) ($reviews->avg('rating') ?? 0),
             ],
             'rating_distribution' => $this->buildRatingDistribution($reviews),
             'top_rated_books' => $this->buildTopRatedBooks($reviews),
@@ -76,7 +76,7 @@ class ReportController extends Controller
                 'id' => $group->first()['genre']->id,
                 'name' => $group->first()['genre']->name,
                 'count' => $group->count(),
-                'average_rating' => $group->avg('rating'),
+                'average_rating' => (float) $group->avg('rating'),
             ])
             ->sortByDesc('average_rating')
             ->take(5)
