@@ -1,9 +1,11 @@
 <nav x-data="{ open: false }" class="bg-white border-b border-gray-100">
     @auth
-        @php
-            $unreadNotificationCount = Auth::user()->unreadNotifications->count();
-        @endphp
-    @endauth 
+    @php
+    $unreadNotificationCount = Route::has('notifications.index')
+    ? Auth::user()->unreadNotifications->count()
+    : 0;
+    @endphp
+    @endauth
 
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
