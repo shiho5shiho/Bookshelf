@@ -3,11 +3,12 @@
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\GenreController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\RankingController;
+use App\Http\Controllers\ReadingPlanController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\ReviewLikeController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\NotificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,6 +34,11 @@ Route::middleware('auth')->group(function () {
     // 通知
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::post('/notifications/{id}/read', [NotificationController::class, 'read'])->name('notifications.read');
+
+    // 読書計画のCRUDルート
+    Route::resource('reading-plans', ReadingPlanController::class)->except(['show']);
+    Route::post('/reading-plans/{reading_plan}/complete', [ReadingPlanController::class, 'complete'])
+        ->name('reading-plans.complete');
 
     // レビュー関連のルート
     Route::post('/books/{book}/reviews', [ReviewController::class, 'store'])->name('reviews.store');
