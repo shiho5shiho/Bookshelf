@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\BookController;
+use App\Http\Controllers\BookIsbnController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\GenreController;
 use App\Http\Controllers\NotificationController;
@@ -30,6 +31,7 @@ Route::get('/', function () {
 Route::middleware('auth')->group(function () {
     // ジャンルのCRUDルート
     Route::resource('genres', GenreController::class);
+    Route::get('/books/isbn/{isbn}', [BookIsbnController::class, 'show'])->name('books.isbn');
     Route::resource('books', BookController::class)->except(['index', 'show']);
 
     // 通知
