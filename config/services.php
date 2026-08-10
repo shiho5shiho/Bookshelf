@@ -31,4 +31,8 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'google_books' => [
+        'base_uri' => env('GOOGLE_BOOKS_API_BASE_URI', 'https://www.googleapis.com/books/v1/volumes'),
+        'key' => env('GOOGLE_BOOKS_API_KEY'),
+    ],
 ];
