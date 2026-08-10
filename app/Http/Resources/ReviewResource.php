@@ -2,9 +2,18 @@
 
 namespace App\Http\Resources;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Carbon;
 
+/**
+ * @property int $id
+ * @property User $user
+ * @property int $rating
+ * @property string $comment
+ * @property Carbon|null $created_at
+ */
 class ReviewResource extends JsonResource
 {
     /**
