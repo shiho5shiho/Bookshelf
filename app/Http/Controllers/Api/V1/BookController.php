@@ -31,7 +31,7 @@ class BookController extends Controller
                 });
             })
             ->when($request->genre_id, function ($query, $genreId) {
-                $query->whereHas('genres', fn($q) => $q->where('genres.id', $genreId));
+                $query->whereHas('genres', fn ($q) => $q->where('genres.id', $genreId));
             })
             ->orderByDesc('id')
             ->paginate($request->input('per_page', 20));
@@ -46,7 +46,7 @@ class BookController extends Controller
     {
         $book->load([
             'genres',
-            'reviews' => fn($query) => $query->with('user')->latest(),
+            'reviews' => fn ($query) => $query->with('user')->latest(),
         ]);
 
         return new BookDetailResource($book);
