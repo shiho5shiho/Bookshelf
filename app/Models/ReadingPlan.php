@@ -27,6 +27,8 @@ class ReadingPlan extends Model
 
     /**
      * この計画を作成したユーザー。
+     *
+     * @return BelongsTo<User, ReadingPlan>
      */
     public function user(): BelongsTo
     {
@@ -35,6 +37,8 @@ class ReadingPlan extends Model
 
     /**
      * この計画の対象書籍。
+     *
+     * @return BelongsTo<Book, ReadingPlan>
      */
     public function book(): BelongsTo
     {

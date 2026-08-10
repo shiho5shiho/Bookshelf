@@ -15,7 +15,7 @@ class User extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable;
 
     /**
-     * The attributes that are mass assignable.
+     * 一括代入を許可する属性。
      *
      * @var array<int, string>
      */
@@ -26,7 +26,7 @@ class User extends Authenticatable
     ];
 
     /**
-     * The attributes that should be hidden for serialization.
+     * シリアライズ時に隠す属性。
      *
      * @var array<int, string>
      */
@@ -36,7 +36,7 @@ class User extends Authenticatable
     ];
 
     /**
-     * The attributes that should be cast.
+     * 型変換する属性。
      *
      * @var array<string, string>
      */
@@ -45,25 +45,41 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    // ユーザーが登録した書籍
+    /**
+     * ユーザーが登録した書籍
+     *
+     * @return HasMany<Book>
+     */
     public function books(): HasMany
     {
         return $this->hasMany(Book::class);
     }
 
-    // ユーザーが投稿したレビュー
+    /**
+     * ユーザーが投稿したレビュー
+     *
+     * @return HasMany<Review>
+     */
     public function reviews(): HasMany
     {
         return $this->hasMany(Review::class);
     }
 
-    // ユーザーがお気に入りにした書籍（中間テーブル: favorites）
+    /**
+     * ユーザーがお気に入りにした書籍（中間テーブル: favorites）
+     *
+     * @return BelongsToMany<Book>
+     */
     public function favoriteBooks(): BelongsToMany
     {
         return $this->belongsToMany(Book::class, 'favorites')->withTimestamps();
     }
 
-    // ユーザーがいいねしたレビュー（中間テーブル: review_likes）
+    /**
+     * ユーザーがいいねしたレビュー（中間テーブル: review_likes）
+     *
+     * @return BelongsToMany<Review>
+     */
     public function likedReviews(): BelongsToMany
     {
         return $this->belongsToMany(Review::class, 'review_likes')->withTimestamps();
