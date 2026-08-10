@@ -9,14 +9,16 @@ use App\Http\Requests\Api\V1\BookUpdateRequest;
 use App\Http\Resources\BookDetailResource;
 use App\Http\Resources\BookResource;
 use App\Models\Book;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
 
 class BookController extends Controller
 {
     /**
-     * AP01: 書籍一覧を取得する
+     * AP01: 書籍一覧を取得する（キーワード検索・ジャンル絞り込み対応）。
      */
-    public function index(BookIndexRequest $request)
+    public function index(BookIndexRequest $request): AnonymousResourceCollection
     {
         $books = Book::query()
             ->with('genres')
@@ -29,7 +31,7 @@ class BookController extends Controller
                 });
             })
             ->when($request->genre_id, function ($query, $genreId) {
-                $query->whereHas('genres', fn ($q) => $q->where('genres.id', $genreId));
+                $query->whereHas('genres', fn($q) => $q->where('genres.id', $genreId));
             })
             ->orderByDesc('id')
             ->paginate($request->input('per_page', 20));
@@ -38,22 +40,22 @@ class BookController extends Controller
     }
 
     /**
-     * AP02: 書籍詳細を取得する
+     * AP02: 書籍詳細を取得する（ジャンル・レビューを含む）。
      */
-    public function show(Book $book)
+    public function show(Book $book): BookDetailResource
     {
         $book->load([
             'genres',
-            'reviews' => fn ($query) => $query->with('user')->latest(),
+            'reviews' => fn($query) => $query->with('user')->latest(),
         ]);
 
         return new BookDetailResource($book);
     }
 
     /**
-     * AP03: 書籍を新規登録する
+     * AP03: 書籍を新規登録する。
      */
-    public function store(BookStoreRequest $request)
+    public function store(BookStoreRequest $request): JsonResponse
     {
         $book = Book::create($request->safe()->except('genres'));
 
@@ -67,9 +69,9 @@ class BookController extends Controller
     }
 
     /**
-     * AP04: 書籍を更新する
+     * AP04: 書籍を更新する。
      */
-    public function update(BookUpdateRequest $request, Book $book)
+    public function update(BookUpdateRequest $request, Book $book): BookResource
     {
         $book->update($request->safe()->except('genres'));
 
@@ -81,9 +83,9 @@ class BookController extends Controller
     }
 
     /**
-     * AP05: 書籍を削除する
+     * AP05: 書籍を削除する。
      */
-    public function destroy(Book $book)
+    public function destroy(Book $book): Response
     {
         $book->delete();
 

@@ -5,13 +5,15 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ReviewRequest;
 use App\Models\Book;
 use App\Models\Review;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 
 class ReviewController extends Controller
 {
     /**
-     * Store a newly created resource in storage.
+     * レビューを新規投稿する。
      */
-    public function store(ReviewRequest $request, Book $book)
+    public function store(ReviewRequest $request, Book $book): RedirectResponse
     {
         $book->reviews()->create($request->validated() + ['user_id' => auth()->id()]);
 
@@ -21,9 +23,9 @@ class ReviewController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * レビュー編集フォームを表示する。投稿者本人のみ許可。
      */
-    public function edit(Review $review)
+    public function edit(Review $review): View
     {
         $this->authorize('update', $review);
 
@@ -31,9 +33,9 @@ class ReviewController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * レビュー内容を更新する。投稿者本人のみ許可。
      */
-    public function update(ReviewRequest $request, Review $review)
+    public function update(ReviewRequest $request, Review $review): RedirectResponse
     {
         $this->authorize('update', $review);
 
@@ -45,9 +47,9 @@ class ReviewController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * レビューを削除する。投稿者本人のみ許可。
      */
-    public function destroy(Review $review)
+    public function destroy(Review $review): RedirectResponse
     {
         $this->authorize('delete', $review);
 
