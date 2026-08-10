@@ -13,7 +13,7 @@ class NotificationController extends Controller
      */
     public function index(Request $request): View
     {
-        $notifications = $request->user()->notifications;
+        $notifications = $request->user()->notifications; // 自分宛ての通知だけ
 
         return view('notifications.index', compact('notifications'));
     }
@@ -25,7 +25,7 @@ class NotificationController extends Controller
     {
         $notification = $request->user()->notifications()->findOrFail($id);
 
-        $notification->markAsRead();
+        $notification->markAsRead(); // read_at に現在時刻を入れるLaravel標準メソッド
 
         return redirect()
             ->route('notifications.index')

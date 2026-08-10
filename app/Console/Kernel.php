@@ -12,7 +12,9 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // $schedule->command('inspire')->hourly();
+        // 毎日1回ずつ実行する。両バッチは対象がきれいに分かれるので、順序は問わない。
+        $schedule->command('reading-plans:send-reminders')->daily();
+        $schedule->command('reading-plans:expire')->daily();
     }
 
     /**

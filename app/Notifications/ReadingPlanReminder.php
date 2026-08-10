@@ -31,22 +31,25 @@ class ReadingPlanReminder extends Notification
         $bookTitle = $this->readingPlan->book->title;
         $targetDate = $this->readingPlan->target_date->format('Y年n月j日');
 
-        return match ($this->timing) {
+        $message = match ($this->timing) {
             'three_days_before' => [
                 'title' => '読了期限が近づいています',
                 'body' => "「{$bookTitle}」の読了期限は{$targetDate}です（あと3日）。",
-                'timing' => $this->timing,
             ],
             'on_due_date' => [
                 'title' => '本日が読了期限です',
                 'body' => "「{$bookTitle}」の読了期限は本日（{$targetDate}）です。",
-                'timing' => $this->timing,
             ],
             'three_days_after' => [
                 'title' => '読了期限を過ぎています',
                 'body' => "「{$bookTitle}」は読了期限（{$targetDate}）を過ぎています。",
-                'timing' => $this->timing,
             ],
         };
+
+        return [
+            'reading_plan_id' => $this->readingPlan->id,
+            'timing' => $this->timing,
+            ...$message,
+        ];
     }
 }
