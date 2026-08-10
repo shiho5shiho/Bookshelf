@@ -10,12 +10,17 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class StoreReadingPlanRequest extends FormRequest
 {
+    /**
+     * このリクエストを実行する権限があるか判定する。
+     */
     public function authorize(): bool
     {
         return true;
     }
 
     /**
+     * バリデーションルールを取得する。
+     *
      * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
@@ -27,6 +32,8 @@ class StoreReadingPlanRequest extends FormRequest
     }
 
     /**
+     * カスタムバリデーションメッセージを取得する。
+     *
      * @return array<string, string>
      */
     public function messages(): array
