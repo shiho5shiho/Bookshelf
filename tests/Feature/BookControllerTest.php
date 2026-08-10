@@ -166,9 +166,9 @@ class BookControllerTest extends TestCase
                 ['isbn' => '123'] + $valid,
                 ['isbn' => 'ISBNは13桁の数字で入力してください。'],
             ],
-            '出版日が空' => [
-                ['published_date' => ''] + $valid,
-                ['published_date' => '出版日を入力してください。'],
+            '出版日の形式が不正' => [
+                ['published_date' => 'not-a-date'] + $valid,
+                ['published_date' => '正しい日付形式で入力してください。'],
             ],
             'ジャンル未選択' => [
                 ['genres' => []] + $valid,
