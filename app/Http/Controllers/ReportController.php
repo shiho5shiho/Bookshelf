@@ -34,6 +34,9 @@ class ReportController extends Controller
 
     /**
      * 1〜5星ごとのレビュー件数を返す（必ず5要素）。
+     *
+     * @param  Collection<int, Review>  $reviews
+     * @return Collection<int, int>
      */
     private function buildRatingDistribution(Collection $reviews): Collection
     {
@@ -43,6 +46,9 @@ class ReportController extends Controller
 
     /**
      * 4星以上の書籍を高い順に最大5件返す（同一書籍は最高評価に集約）。
+     *
+     * @param  Collection<int, Review>  $reviews
+     * @return Collection<int, array{id: int, title: string, author: string, rating: int}>
      */
     private function buildTopRatedBooks(Collection $reviews): Collection
     {
@@ -63,6 +69,9 @@ class ReportController extends Controller
 
     /**
      * ジャンル別の平均評価を高い順に最大5件返す。
+     *
+     * @param  Collection<int, Review>  $reviews
+     * @return Collection<int, array{id: int, name: string, count: int, average_rating: float}>
      */
     private function buildGenreRatings(Collection $reviews): Collection
     {

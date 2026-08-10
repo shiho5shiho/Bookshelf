@@ -8,20 +8,18 @@ use Illuminate\Foundation\Http\FormRequest;
 class BookIndexRequest extends FormRequest
 {
     /**
-     * Determine if the user is authorized to make this request.
+     * このリクエストを実行する権限があるか判定する。
      */
-    // 実行可否の判断
     public function authorize(): bool
     {
         return true;
     }
 
     /**
-     * Get the validation rules that apply to the request.
+     * バリデーションルールを取得する。
      *
      * @return array<string, ValidationRule|array<mixed>|string>
      */
-    // 検証ルールの取得
     public function rules(): array
     {
         return [
@@ -32,7 +30,11 @@ class BookIndexRequest extends FormRequest
         ];
     }
 
-    //  エラーメッセージ
+    /**
+     * カスタムバリデーションメッセージを取得する。
+     *
+     * @return array<string, string>
+     */
     public function messages(): array
     {
         return [

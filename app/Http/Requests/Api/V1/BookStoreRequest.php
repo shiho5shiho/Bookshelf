@@ -8,7 +8,7 @@ use Illuminate\Foundation\Http\FormRequest;
 class BookStoreRequest extends FormRequest
 {
     /**
-     * Determine if the user is authorized to make this request.
+     * このリクエストを実行する権限があるか判定する。
      */
     public function authorize(): bool
     {
@@ -16,7 +16,7 @@ class BookStoreRequest extends FormRequest
     }
 
     /**
-     * Get the validation rules that apply to the request.
+     * バリデーションルールを取得する。
      *
      * @return array<string, ValidationRule|array<mixed>|string>
      */
@@ -35,6 +35,11 @@ class BookStoreRequest extends FormRequest
         ];
     }
 
+    /**
+     * カスタムバリデーションメッセージを取得する。
+     *
+     * @return array<string, string>
+     */
     public function messages(): array
     {
         return [

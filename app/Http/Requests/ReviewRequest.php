@@ -8,8 +8,7 @@ use Illuminate\Foundation\Http\FormRequest;
 class ReviewRequest extends FormRequest
 {
     /**
-     * Determine if the user is authorized to make this request.
-     *実行可否の判断
+     * このリクエストを実行する権限があるか判定する。
      */
     public function authorize(): bool
     {
@@ -17,10 +16,9 @@ class ReviewRequest extends FormRequest
     }
 
     /**
-     * Get the validation rules that apply to the request.
+     * バリデーションルールを取得する。
      *
      * @return array<string, ValidationRule|array<mixed>|string>
-     *検証ルールの取得
      */
     public function rules(): array
     {
@@ -30,7 +28,11 @@ class ReviewRequest extends FormRequest
         ];
     }
 
-    // エラーメッセージ
+    /**
+     * カスタムバリデーションメッセージを取得する。
+     *
+     * @return array<string, string>
+     */
     public function messages(): array
     {
         return [

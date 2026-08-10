@@ -14,7 +14,11 @@ class Genre extends Model
         'name',
     ];
 
-    // ジャンルに紐づく書籍（中間テーブル: book_genre）
+    /**
+     * ジャンルに紐づく書籍（中間テーブル: book_genre）
+     *
+     * @return BelongsToMany<Book>
+     */
     public function books(): BelongsToMany
     {
         return $this->belongsToMany(Book::class, 'book_genre')->withTimestamps();

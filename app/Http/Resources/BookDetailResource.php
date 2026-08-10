@@ -4,7 +4,20 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Carbon;
 
+/**
+ * @property int $id
+ * @property int $user_id
+ * @property string $title
+ * @property string $author
+ * @property string|null $isbn
+ * @property Carbon|null $published_date
+ * @property string|null $description
+ * @property string|null $image_url
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ */
 class BookDetailResource extends JsonResource
 {
     /**
