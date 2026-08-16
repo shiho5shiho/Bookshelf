@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\Api\V1\BookController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,9 +14,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
 Route::prefix('v1')->name('api.v1.')->group(function () {
-    Route::apiResource('books', BookController::class);
+    // 読み取り系（一覧・詳細）は認証不要のまま公開する
+    Route::apiResource('books', BookController::class)->only(['index', 'show']);
+
+    // 書き込み系（登録・更新・削除）はSanctumのBearerトークン認証を必須にする
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::apiResource('books', BookController::class)->only(['store', 'update', 'destroy']);
+    });
 });

@@ -7,6 +7,7 @@ use App\Models\Genre;
 use App\Models\Review;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
 class BookApiTest extends TestCase
@@ -144,9 +145,9 @@ class BookApiTest extends TestCase
     {
         // Arrange
         $user = User::factory()->create();
+        Sanctum::actingAs($user);
         $genres = Genre::factory()->count(2)->create();
         $payload = [
-            'user_id' => $user->id,
             'title' => 'テスト駆動開発',
             'author' => 'Kent Beck',
             'isbn' => '9781234567890',
@@ -162,6 +163,7 @@ class BookApiTest extends TestCase
         $response->assertCreated();
         $response->assertJsonPath('data.title', 'テスト駆動開発');
         $this->assertDatabaseHas('books', [
+            'user_id' => $user->id,
             'title' => 'テスト駆動開発',
             'isbn' => '9781234567890',
         ]);
@@ -173,6 +175,8 @@ class BookApiTest extends TestCase
     public function test_必須項目が無いと登録に失敗する(): void
     {
         // Arrange
+        $user = User::factory()->create();
+        Sanctum::actingAs($user);
         $payload = []; // 全項目欠落
 
         // Act
@@ -180,17 +184,17 @@ class BookApiTest extends TestCase
 
         // Assert
         $response->assertUnprocessable(); // 422
-        $response->assertJsonValidationErrors(['user_id', 'title', 'author', 'isbn', 'published_date', 'genres']);
+        $response->assertJsonValidationErrors(['title', 'author', 'isbn', 'published_date', 'genres']);
     }
 
     public function test_書籍を更新できる(): void
     {
         // Arrange
         $user = User::factory()->create();
-        $book = Book::factory()->create(['title' => '更新前']);
+        Sanctum::actingAs($user);
+        $book = Book::factory()->create(['user_id' => $user->id, 'title' => '更新前']);
         $genre = Genre::factory()->create();
         $payload = [
-            'user_id' => $user->id,
             'title' => '更新後',
             'author' => '著者',
             'isbn' => '9789999999999',
@@ -213,7 +217,9 @@ class BookApiTest extends TestCase
     public function test_書籍を削除できる(): void
     {
         // Arrange
-        $book = Book::factory()->create();
+        $user = User::factory()->create();
+        Sanctum::actingAs($user);
+        $book = Book::factory()->create(['user_id' => $user->id]);
 
         // Act
         $response = $this->deleteJson(route('api.v1.books.destroy', $book));
@@ -221,5 +227,93 @@ class BookApiTest extends TestCase
         // Assert
         $response->assertNoContent(); // 204
         $this->assertDatabaseMissing('books', ['id' => $book->id]);
+    }
+
+    public function test_作成者以外が更新すると403(): void
+    {
+        // Arrange
+        $owner = User::factory()->create();
+        $other = User::factory()->create();
+        $book = Book::factory()->for($owner)->create();
+
+        $data = [
+            'title' => '更新後',
+            'author' => 'Kent Beck',
+            'isbn' => '9781234567890',
+            'published_date' => '2012-06-23',
+            'genres' => [Genre::factory()->create()->id],
+        ];
+
+        // Act
+        Sanctum::actingAs($other);
+        $response = $this->putJson(route('api.v1.books.update', $book), $data);
+
+        // Assert
+        $response->assertForbidden();
+        $this->assertDatabaseHas('books', ['id' => $book->id, 'title' => $book->title]);
+    }
+
+    public function test_作成者以外が削除すると403(): void
+    {
+        // Arrange
+        $owner = User::factory()->create();
+        $other = User::factory()->create();
+        $book = Book::factory()->for($owner)->create();
+
+        // Act
+        Sanctum::actingAs($other);
+        $response = $this->deleteJson(route('api.v1.books.destroy', $book));
+
+        // Assert
+        $response->assertForbidden();
+        $this->assertDatabaseHas('books', ['id' => $book->id]);
+    }
+
+    public function test_未認証者が書籍を登録すると401になる(): void
+    {
+        // Act
+        $response = $this->postJson(route('api.v1.books.store'), [
+            'title' => 'テスト駆動開発',
+            'author' => 'Kent Beck',
+            'isbn' => '9781234567890',
+            'published_date' => '2012-06-23',
+            'genres' => [1],
+        ]);
+
+        // Assert
+        $response->assertUnauthorized();
+        $response->assertJson(['error' => '認証が必要です。']);
+        $this->assertDatabaseMissing('books', ['isbn' => '9781234567890']);
+    }
+
+    public function test_未認証者が書籍を更新すると401になる(): void
+    {
+        // Arrange
+        $book = Book::factory()->create(['title' => '更新前タイトル']);
+
+        // Act
+        $response = $this->putJson(route('api.v1.books.update', $book), []);
+
+        // Assert
+        $response->assertUnauthorized();
+        $response->assertJson(['error' => '認証が必要です。']);
+        $this->assertDatabaseHas('books', [
+            'id' => $book->id,
+            'title' => '更新前タイトル',
+        ]);
+    }
+
+    public function test_未認証者が書籍を削除すると401になる(): void
+    {
+        // Arrange
+        $book = Book::factory()->create();
+
+        // Act
+        $response = $this->deleteJson(route('api.v1.books.destroy', $book));
+
+        // Assert
+        $response->assertUnauthorized();
+        $response->assertJson(['error' => '認証が必要です。']);
+        $this->assertDatabaseHas('books', ['id' => $book->id]);
     }
 }

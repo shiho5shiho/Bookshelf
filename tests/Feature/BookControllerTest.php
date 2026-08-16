@@ -80,7 +80,7 @@ class BookControllerTest extends TestCase
         $response->assertSee('とても良い本です');  // レビューコメント
     }
 
-    public function test_存在しない書籍_i_dを指定すると404になる(): void
+    public function test_存在しない書籍idを指定すると404になる(): void
     {
         // Arrange
         // RefreshDatabase でDBは空。 だからID=999の書籍は存在しない。「存在しない」状態は「何も作らない」ことで自然に作れる。
@@ -192,7 +192,7 @@ class BookControllerTest extends TestCase
         $this->assertDatabaseEmpty('books');
     }
 
-    public function test_重複する_isb_nは登録できない(): void
+    public function test_重複する_isbnは登録できない(): void
     {
         // Arrange
         Book::factory()->create(['isbn' => '9781234567890']);  // 先に1件作る
@@ -282,7 +282,7 @@ class BookControllerTest extends TestCase
         $response->assertRedirect(route('books.show', $book));
     }
 
-    public function test_更新時に自身の_isb_nはそのまま使える(): void
+    public function test_更新時に自身の_isbnはそのまま使える(): void
     {
         // Arrange
         $user = User::factory()->create();
@@ -309,7 +309,7 @@ class BookControllerTest extends TestCase
         ]);
     }
 
-    public function test_更新時に他の書籍の_isb_nには変更できない(): void
+    public function test_更新時に他の書籍の_isbnには変更できない(): void
     {
         // Arrange
         $user = User::factory()->create();
