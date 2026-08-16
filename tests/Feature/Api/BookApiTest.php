@@ -285,4 +285,35 @@ class BookApiTest extends TestCase
         $response->assertJson(['error' => '認証が必要です。']);
         $this->assertDatabaseMissing('books', ['isbn' => '9781234567890']);
     }
+
+    public function test_未認証者が書籍を更新すると401になる(): void
+    {
+        // Arrange
+        $book = Book::factory()->create(['title' => '更新前タイトル']);
+
+        // Act
+        $response = $this->putJson(route('api.v1.books.update', $book), []);
+
+        // Assert
+        $response->assertUnauthorized();
+        $response->assertJson(['error' => '認証が必要です。']);
+        $this->assertDatabaseHas('books', [
+            'id' => $book->id,
+            'title' => '更新前タイトル',
+        ]);
+    }
+
+    public function test_未認証者が書籍を削除すると401になる(): void
+    {
+        // Arrange
+        $book = Book::factory()->create();
+
+        // Act
+        $response = $this->deleteJson(route('api.v1.books.destroy', $book));
+
+        // Assert
+        $response->assertUnauthorized();
+        $response->assertJson(['error' => '認証が必要です。']);
+        $this->assertDatabaseHas('books', ['id' => $book->id]);
+    }
 }
