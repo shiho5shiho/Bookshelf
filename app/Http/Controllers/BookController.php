@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\SearchBookRequest;
 use App\Http\Requests\StoreBookRequest;
 use App\Http\Requests\UpdateBookRequest;
 use App\Models\Book;
@@ -14,11 +15,37 @@ class BookController extends Controller
     /**
      * 書籍一覧を表示する（10件ずつページネーション）。
      */
-    public function index(): View
+    public function index(SearchBookRequest $request): View
     {
-        $books = Book::with('genres')->latest()->paginate(10);
+        $query = Book::with('genres');
+        $genres = Genre::all(); // ジャンルを取得してビューに渡すためにここで取得
+        // キーワード検索（タイトル・著者）
+        if ($request->filled('keyword')) {
+            $keyword = $request->input('keyword');
+            $query->where(function ($q) use ($keyword) {
+                $q->where('title', 'like', '%'.$keyword.'%')
+                    ->orWhere('author', 'like', '%'.$keyword.'%');
+            });
+        }
+        // ジャンル検索
+        if ($request->filled('genre')) {
+            $query->whereHas('genres', function ($q) use ($request) {
+                $q->where('genres.id', $request->input('genre'));
+            });
+        }
 
-        return view('books.index', compact('books'));
+        // 並び替え
+        match ($request->input('sort')) {
+            'newest' => $query->latest(),
+            'oldest' => $query->oldest(),
+            'rating' => $query->withAvg('reviews', 'rating')->orderByDesc('reviews_avg_rating'),
+            'title' => $query->orderBy('title', 'asc'),
+            default => $query->latest()
+        };
+        $books = $query->paginate(10);
+        $books->appends($request->all()); // ページネーションリンクに検索条件を保持する
+
+        return view('books.index', compact('books', 'genres'));
     }
 
     /**
