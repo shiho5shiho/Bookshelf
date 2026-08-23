@@ -174,6 +174,10 @@ class BookControllerTest extends TestCase
                 ['genres' => []] + $valid,
                 ['genres' => 'ジャンルを1つ以上選択してください。'],
             ],
+            '説明文が500文字を超える' => [
+                ['description' => str_repeat('a', 501)] + $valid,
+                ['description' => '説明文は500文字以内で入力してください。'],
+            ],
         ];
     }
 
