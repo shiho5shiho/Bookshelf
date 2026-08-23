@@ -164,7 +164,7 @@ class BookControllerTest extends TestCase
             ],
             'ISBNが13桁でない' => [
                 ['isbn' => '123'] + $valid,
-                ['isbn' => 'ISBNは13桁の数字で入力してください。'],
+                ['isbn' => 'ISBNは13桁で入力してください。'],
             ],
             '出版日の形式が不正' => [
                 ['published_date' => 'not-a-date'] + $valid,

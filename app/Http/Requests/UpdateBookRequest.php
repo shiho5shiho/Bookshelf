@@ -51,7 +51,7 @@ class UpdateBookRequest extends FormRequest
             'title.max' => 'タイトルは255文字以内で入力してください。',
             'author.required' => '著者名を入力してください。',
             'author.max' => '著者名は255文字以内で入力してください。',
-            'isbn.digits' => 'ISBNは13桁の数字で入力してください。',
+            'isbn.digits' => 'ISBNは13桁で入力してください。',
             'isbn.unique' => 'このISBNは既に登録されています。',
             'published_date.date' => '正しい日付形式で入力してください。',
             'description.max' => '説明文は500文字以内で入力してください。',
