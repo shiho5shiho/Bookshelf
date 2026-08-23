@@ -20,9 +20,18 @@
     7. ランキング機能（書籍の評価ランキング表示）
     8. 公開API（書籍情報の取得）
 
+- 応用機能：
+    1. 検索・絞り込み・並び替え（キーワード／ジャンル／並び順）
+    2. 通知機能
+    3. 読書計画（登録・進捗管理）
+    4. マイ読書レポート
+    5. 日次バッチ処理（読書計画の自動失効・リマインダー送信）
+    6. ISBN検索（Google Books API連携）
+    7. Sanctum認証（書き込み系APIのトークン必須化）
+
 ## ER図
 
-![ER図](docs/er-diagram.png)
+![ER図](docs/er-diagram2.png)
 
 ## プロジェクト環境構築手順
 
@@ -129,6 +138,19 @@ sail npm run dev
 
 ※ `sail npm run dev` はアプリケーション確認中は実行したままにしてください。
 
+### ログイン情報（動作確認用）
+
+`sail artisan migrate --seed` 実行後、以下のユーザーでログインできます（パスワードは全員共通で `password`）。
+
+| 名前     | メールアドレス        | パスワード |
+| -------- | --------------------- | ---------- |
+| 山田太郎 | yamada@example.com    | password   |
+| 鈴木花子 | suzuki@example.com    | password   |
+| 田中一郎 | tanaka@example.com    | password   |
+| 佐藤美咲 | sato@example.com      | password   |
+| 高橋健太 | takahashi@example.com | password   |
+
+※読書計画などの動作確認シナリオは、山田太郎（yamada@example.com）に集約して投入されています。
 
 
 ## 使用技術
@@ -164,6 +186,18 @@ Laravel標準のエラーページを日本語で表示します。`config/app.p
 
 ※`422`（バリデーションエラー）は、`abort()`によるエラーページとは異なる仕組み（各リクエストクラスの`messages()`）で個別に日本語化しているため、本表の対象外としています。
 
+## 日次バッチ処理（応用）
+
+読書計画の自動失効・リマインダー送信は、以下のArtisanコマンドで実行されます。本番環境ではLaravelのスケジューラにより毎日0:00に自動実行されますが（`app/Console/Kernel.php`にて`daily()`で設定）、動作確認のために手動実行も可能です。
+
+```bash
+# 期限切れの読書計画を自動的に失効させる
+sail artisan reading-plans:expire
+
+# 読書計画のリマインダー通知を送信する
+sail artisan reading-plans:send-reminders
+```
+
 ## APIエンドポイント一覧
 
 ベースURL: `http://localhost/api/v1`
@@ -194,51 +228,23 @@ Laravel標準のエラーページを日本語で表示します。`config/app.p
 
 本プロジェクトのテストは、目的に応じて以下のディレクトリに分かれています。
 
-| ディレクトリ        | 内容                                              |
-| :------------------ | :------------------------------------------------ |
-| `tests/Unit`        | クラス単体のロジックを検証するテスト。            |
-| `tests/Feature`     | 画面(Web)経由の一連の操作フローを検証するテスト。 |
-| `tests/Feature/Api` | 公開APIのリクエスト・レスポンスを検証するテスト。 |
+| ディレクトリ            | 内容                                                                             |
+| :---------------------- | :------------------------------------------------------------------------------- |
+| `tests/Unit`            | クラス単体のロジックを検証するテスト。                                           |
+| `tests/Feature`         | 画面(Web)経由の一連の操作フローを検証するテスト。                                |
+| `tests/Feature/Api`     | 公開APIのリクエスト・レスポンスを検証するテスト。                                |
 | `tests/Feature/Console` | コンソールコマンドのスケジュール登録など、フレームワークの設定を検証するテスト。 |
+
+なお、基本フェーズはテストをまとめて実装しましたが、応用フェーズでは各機能のテストを対応するIssueのPR内に含める形で進めています。
 
 各テストメソッドは日本語の命名(例:`test_書籍を登録できる`)で、何を検証しているかが分かるようにしています。また、処理の見通しを良くするため、基本的にArrange(準備)・Act(実行)・Assert(検証)の3ブロックに分けてコメントを記述しています。
 
 なお、認証が絡むテストでは、Sanctumが提供する`Sanctum::actingAs()`というテスト専用のヘルパーを使い、実際のトークン発行を省略して「認証済みユーザーとして操作する」状態を再現しています。一部のテストでは、実際にトークンを発行して`Authorization`ヘッダーに付与する方式でも認証を確認しています。
 
-### カバレッジ・API連携用の環境変数
-
-`.env.example`（`### 2. .envファイルの作成`でコピー済みの`.env`）には、カバレッジ計測用の`XDEBUG_MODE=coverage`とGoogle Books API連携用の設定項目もあらかじめ含まれているため、追加の入力は不要です。
-
-### テスト用データベースの設定
-本プロジェクトでは、テスト実行時にMySQLではなくSQLite（インメモリ）を使用するよう、`phpunit.xml`があらかじめ設定されています。リポジトリをcloneした時点でこの設定が反映されているため、追加の作業は不要です。
-
-`phpunit.xml`の`<php>`セクション（抜粋）:
-
-```xml
-<php>
-    <env name="APP_ENV" value="testing"/>
-    <env name="BCRYPT_ROUNDS" value="4"/>
-    <env name="CACHE_DRIVER" value="array"/>
-    <env name="DB_CONNECTION" value="sqlite"/>
-    <env name="DB_DATABASE" value=":memory:"/>
-    <env name="MAIL_MAILER" value="array"/>
-    <env name="QUEUE_CONNECTION" value="sync"/>
-    <env name="SESSION_DRIVER" value="array"/>
-</php>
-```
-
-| 設定項目         | 値         | 説明                                                                           |
-| ---------------- | ---------- | ------------------------------------------------------------------------------ |
-| `APP_ENV`        | `testing`  | テスト実行時であることを示す                                                   |
-| `BCRYPT_ROUNDS`  | `4`        | パスワードハッシュの計算コストを下げ、テストを高速化する                       |
-| `CACHE_DRIVER`   | `array`    | キャッシュをメモリ上に保持し、テスト間で影響を残さない                         |
-| `DB_CONNECTION`  | `sqlite`   | 開発用のMySQLとは別に、テスト専用の接続先を使う                                |
-| `DB_DATABASE`    | `:memory:` | ディスクにファイルを作らず、メモリ上にDBを作成する（高速・テスト間の影響なし） |
-| `SESSION_DRIVER` | `array`    | セッションをメモリ上に保持する                                                 |
-
-**なぜSQLite（インメモリ）を使うのか**：本番・開発環境ではMySQLを使用していますが、テストではSQLiteのインメモリデータベースに切り替えています。ディスクI/Oが発生しないため実行が高速なうえ、テストごとに空の状態から始まり（`RefreshDatabase`トレイトによりテストメソッドごとにリセットされる）、開発用DBのデータを一切汚しません。
-
 ### テストの実行方法
+本番用のMySQLとは分離し、SQLiteのインメモリDB（`:memory:`）でテストを実行します（`phpunit.xml`に設定済みのため、追加の作業は不要です）。  
+ディスクI/Oが発生しないため実行が高速なうえ、`RefreshDatabase`トレイトによりテストごとに空の状態から始まるため、開発用DBのデータを一切汚しません。  
+カバレッジ計測用の`XDEBUG_MODE=coverage`、Google Books API連携用の設定も`.env.example`にあらかじめ含まれているため、追加の入力は不要です。
 
 ```bash
 # 全テストを実行する
@@ -252,23 +258,13 @@ sail bin pint --test
 
 # 静的解析(PHPStan / Larastan)
 sail bin phpstan analyse
-```
 
-### カバレッジレポートの取得
-
-テストがコード全体のどれくらいの範囲を検証できているかは、以下のコマンドで確認できます。  
-※`.env`に`XDEBUG_MODE=coverage`が設定済みのため、コマンドの先頭に環境変数を付ける必要はありません。
-
-```bash
-# ターミナルに概要を出力する
+# カバレッジの概要をターミナルに出力する
 sail artisan test --coverage
-
-# HTML形式の詳細レポートを出力する
-sail artisan test --coverage-html=coverage
 ```
 
-> プロジェクトでは、全体で98.0%のカバレッジを達成しています。  
-※なお、`TrustHosts`ミドルウェアや`BroadcastServiceProvider`など、本プロジェクトの要件上使用していない一部のLaravel標準機能については、実行経路自体が存在しないためカバレッジが0%となっていますが、実装済みロジックの検証漏れではありません。
+> プロジェクト全体で98.1%のカバレッジを達成しています（要件基準：基本機能60%以上／応用機能を含めて80%以上）。
+※`TrustHosts`ミドルウェアや`BroadcastServiceProvider`など、本プロジェクトの要件上使用していない一部のLaravel標準機能については、実行経路自体が存在しないためカバレッジが0%となっていますが、実装済みロジックの検証漏れではありません。
 
 ## 開発環境URL
 
