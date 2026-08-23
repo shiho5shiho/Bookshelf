@@ -43,18 +43,18 @@ class ReadingPlanSeeder extends Seeder
                 'target_date' => $today->copy(),
                 'status' => ReadingPlanStatus::InProgress,
             ],
-            // 3. リマインダー「3日後」が発火するパターン
+            // 3. リマインダー「失効から3日後（再エンゲージメント）」が発火するパターン
             [
                 'user_id' => $userA->id,
                 'book_id' => $books['9784873115658']->id,
-                'target_date' => $today->copy()->subDays(3),
-                'status' => ReadingPlanStatus::InProgress,
+                'target_date' => $today->copy()->subDays(4),
+                'status' => ReadingPlanStatus::Expired,
             ],
-            // 4. 失効バッチ実行でExpiredに変わることを確認するパターン
+            // 4. 失効バッチ実行でExpiredに変わることを確認するパターン（期日は昨日＝まだ未処理）
             [
                 'user_id' => $userA->id,
                 'book_id' => $books['9784863940246']->id,
-                'target_date' => $today->copy()->subDays(4),
+                'target_date' => $today->copy()->subDays(1),
                 'status' => ReadingPlanStatus::InProgress,
             ],
             // 5. まだ何も発火しない、通常の進行中パターン
