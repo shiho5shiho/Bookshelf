@@ -46,11 +46,11 @@ class ReadingPlanReminderBatchTest extends TestCase
         $this->assertSame('on_due_date', $plan->user->notifications()->first()->data['timing']);
     }
 
-    public function test_期日3日後の未読計画にリマインダー通知が送られる(): void
+    public function test_失効から3日後の計画に再エンゲージメント通知が送られる(): void
     {
         $plan = ReadingPlan::factory()->create([
-            'status' => ReadingPlanStatus::InProgress,
-            'target_date' => Carbon::today()->subDays(3),
+            'status' => ReadingPlanStatus::Expired,
+            'target_date' => Carbon::today()->subDays(4),
         ]);
 
         $this->artisan('reading-plans:send-reminders')->assertSuccessful();

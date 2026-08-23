@@ -19,11 +19,11 @@ class ReadingPlanExpireBatchTest extends TestCase
         $this->travelTo(Carbon::parse('2026-01-15'));
     }
 
-    public function test_期日を4日以上過ぎた未読計画は失効する(): void
+    public function test_期日を過ぎた未読計画は失効する(): void
     {
         $plan = ReadingPlan::factory()->create([
             'status' => ReadingPlanStatus::InProgress,
-            'target_date' => Carbon::today()->subDays(4),
+            'target_date' => Carbon::today()->subDay(1),
         ]);
 
         $this->artisan('reading-plans:expire')->assertSuccessful();
@@ -31,11 +31,11 @@ class ReadingPlanExpireBatchTest extends TestCase
         $this->assertSame(ReadingPlanStatus::Expired, $plan->fresh()->status);
     }
 
-    public function test_期日3日後の未読計画はまだ失効しない(): void
+    public function test_期日当日の計画はまだ失効しない(): void
     {
         $plan = ReadingPlan::factory()->create([
             'status' => ReadingPlanStatus::InProgress,
-            'target_date' => Carbon::today()->subDays(3),
+            'target_date' => Carbon::today(),
         ]);
 
         $this->artisan('reading-plans:expire')->assertSuccessful();

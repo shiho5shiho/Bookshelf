@@ -18,34 +18,38 @@ class SendReadingPlanReminders extends Command
     /**
      * @var string
      */
-    protected $description = '未読の読書計画に、期日3日前・当日・3日後のリマインダー通知を送信する';
+    protected $description = '読書計画に、期日3日前・当日のリマインダーと、失効から3日後の再エンゲージメント通知を送信する';
 
     public function handle(): int
     {
         $today = Carbon::today();
 
-        // 「タイミング名」=> 「その通知を出す期日」
-        // 例：three_days_before は、期日が今日から3日後の計画に送る
+        // 「タイミング名」=> ['status' => 対象ステータス, 'date' => 対象となる日付]
         $schedule = [
-            'three_days_before' => $today->copy()->addDays(3),
-            'on_due_date' => $today->copy(),
-            'three_days_after' => $today->copy()->subDays(3),
+            'three_days_before' => [
+                'status' => ReadingPlanStatus::InProgress,
+                'date' => $today->copy()->addDays(3),
+            ],
+            'on_due_date' => [
+                'status' => ReadingPlanStatus::InProgress,
+                'date' => $today->copy(),
+            ],
+            'three_days_after' => [
+                'status' => ReadingPlanStatus::Expired,
+                'date' => $today->copy()->subDays(4), // 失効(期日+1)から3日後 = 期日+4
+            ],
         ];
 
         $sent = 0;
 
-        foreach ($schedule as $timing => $targetDate) {
-            // 主条件：未読（in_progress）の計画だけが対象。
-            // 日付は「ちょうどこの日」の完全一致で拾う（範囲にしないことで、日をまたいだ重複送信を防ぐ）。
+        foreach ($schedule as $timing => $condition) {
             $plans = ReadingPlan::query()
-                ->where('status', ReadingPlanStatus::InProgress)
-                ->whereDate('target_date', $targetDate)
+                ->where('status', $condition['status'])
+                ->whereDate('target_date', $condition['date'])
                 ->with(['user', 'book'])
                 ->get();
 
             foreach ($plans as $plan) {
-                // 同じ計画×同じタイミングの通知が既にあれば送らない
-                // （同じ日にバッチを2回叩いた場合の保険。完全一致だけでは同日多重実行を防げないため）
                 $alreadySent = $plan->user->notifications()
                     ->where('type', ReadingPlanReminder::class)
                     ->where('data->reading_plan_id', $plan->id)
