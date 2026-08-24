@@ -198,6 +198,15 @@ sail artisan reading-plans:expire
 sail artisan reading-plans:send-reminders
 ```
 
+### 失効・通知のタイミング
+
+| コマンド                       | タイミング           | 対象・内容                              |
+| :----------------------------- | :------------------- | :-------------------------------------- |
+| `reading-plans:expire`         | 期日を過ぎたら即座に | `in_progress`の計画を`expired`に変更    |
+| `reading-plans:send-reminders` | 期日の3日前          | `in_progress`の計画にリマインダー通知   |
+| 〃                             | 期日当日             | `in_progress`の計画にリマインダー通知   |
+| 〃                             | 失効してから3日後    | `expired`の計画に再エンゲージメント通知 |
+
 ## APIエンドポイント一覧
 
 ベースURL: `http://localhost/api/v1`
